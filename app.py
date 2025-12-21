@@ -52,4 +52,48 @@ def extract_text_from_pdf(pdf_file) -> List[Dict]:
                     })
     return pages
 
+def chunk_text(pages: List[Dict], chunk_size: int = 500, overlap: int = 50) -> List[Dict]:
+    chunks = []
+    chunk_id = 0
+    
+    for page_info in pages:
+        text = page_info['text']
+        page_num = page_info['page_num']
+        
+        sentences = text.split('. ')
+        
+        current_chunk = []
+        current_length = 0
+        
+        for sentence in sentences:
+            sentence_length = len(sentence.split())
+            
+            if current_length + sentence_length > chunk_size and current_chunk:
+                chunk_text = '. '.join(current_chunk) + '.'
+                chunks.append({
+                    'text': chunk_text,
+                    'page_num': page_num,
+                    'chunk_id': chunk_id
+                })
+                chunk_id += 1
+                
+                overlap_words = ' '.join(current_chunk[-overlap:]).split()[:overlap]
+                current_chunk = overlap_words
+                current_length = len(current_chunk)
+            
+            current_chunk.append(sentence)
+            current_length += sentence_length
+        
+        if current_chunk:
+            chunk_text = '. '.join(current_chunk)
+            if chunk_text.strip():
+                chunks.append({
+                    'text': chunk_text,
+                    'page_num': page_num,
+                    'chunk_id': chunk_id
+                })
+                chunk_id += 1
+    
+    return chunks
+
 
