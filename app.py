@@ -96,4 +96,41 @@ def chunk_text(pages: List[Dict], chunk_size: int = 500, overlap: int = 50) -> L
     
     return chunks
 
+def process_pdfs(pdf_files) -> str:
+    global documents_data
+    if pdf_files is None or len(pdf_files) == 0:
+        return "Please upload at least one PDF file."
+    
+    documents_data = []
+    all_text = []
+    
+    for pdf_file in pdf_files:
+        try:
+            filename = pdf_file.name.split('/')[-1] if '/' in pdf_file.name else pdf_file.name.split('\\')[-1]
+            print(f"Processing {filename}...")
+            
+            pages = extract_text_from_pdf(pdf_file)
+            if not pages:
+                return f"Error: Could not extract text from {filename}. The PDF might be image-based or corrupted."
+    
+            chunks = chunk_text(pages)
+            if not chunks:
+                return f"Error: Could not create chunks from {filename}."
+            
+            chunk_texts = [chunk['text'] for chunk in chunks]
+            embeddings = model.encode(chunk_texts, show_progress_bar=True)
+            
+            doc = Document(filename, pages, chunks, embeddings)
+            documents_data.append(doc)
+            
+            all_text.append(f"✓ {filename}: {len(pages)} pages, {len(chunks)} chunks")
+            
+        except Exception as e:
+            error_msg = f"Error processing {pdf_file.name}: {str(e)}"
+            print(error_msg)
+            return error_msg
+    
+    summary = f"Successfully processed {len(documents_data)} PDF file(s):\n" + "\n".join(all_text)
+    return summary
+
 
