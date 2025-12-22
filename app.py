@@ -159,4 +159,35 @@ def retrieve_relevant_chunks(query: str, top_k: int = 3) -> List[Tuple[Dict, flo
     all_matches.sort(key=lambda x: x[1], reverse=True)
     return all_matches[:top_k]
 
+def generate_answer(query: str, relevant_chunks: List[Tuple[Dict, float]], history: List) -> Tuple[str, List]:
+    if not relevant_chunks:
+        error_msg = "No relevant information found. Please upload PDF files first or try rephrasing your question."
+        history.append((query, error_msg))
+        return error_msg, history
+    
+    context_parts = []
+    sources = []
+    for chunk_info, similarity in relevant_chunks:
+        context_parts.append(f"[From {chunk_info['filename']}, Page {chunk_info['page_num']}]: {chunk_info['text']}")
+        sources.append({
+            'filename': chunk_info['filename'],
+            'page': chunk_info['page_num'],
+            'similarity': f"{similarity:.2%}"
+        })
+    context = "\n\n".join(context_parts)
+    
+    history_context = ""
+    if history:
+        history_context = "\n\nPrevious conversation:\n"
+        exchange_count = 0
+        for item in history[-6:]:  
+            if isinstance(item, tuple):
+                user_msg, bot_msg = item
+                exchange_count += 1
+                history_context += f"Q{exchange_count}: {user_msg}\nA{exchange_count}: {bot_msg}\n"
+                if exchange_count >= 3:
+                    break
+            elif isinstance(item, dict):
+                continue
+
 
