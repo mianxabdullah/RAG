@@ -238,3 +238,16 @@ Answer:"""
         print(error_msg)
         history.append((query, error_msg))
         return error_msg, history
+    
+def convert_history_to_messages(history: List) -> List:
+    if not history:
+        return []
+    messages = []
+    for item in history:
+        if isinstance(item, tuple) and len(item) == 2:
+            user_msg, bot_msg = item
+            messages.append({"role": "user", "content": str(user_msg)})
+            messages.append({"role": "assistant", "content": str(bot_msg)})
+        elif isinstance(item, dict) and "role" in item and "content" in item:
+            messages.append(item)
+    return messages
