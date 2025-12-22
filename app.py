@@ -190,4 +190,42 @@ def generate_answer(query: str, relevant_chunks: List[Tuple[Dict, float]], histo
             elif isinstance(item, dict):
                 continue
 
+    prompt = f"""You are a helpful assistant that answers questions based on the provided document context.
+
+Context from documents:
+{context}
+{history_context}
+
+Question: {query}
+
+Please answer the question based on the provided context. If the context doesn't contain enough information, say so. At the end of your answer, mention the source documents and page numbers you used.
+
+Answer:"""
+    
+    if not client:
+        error_msg = "Error: Groq API key not configured. Please set GROQ_API_KEY environment variable."
+        history.append((query, error_msg))
+        return error_msg, history
+    try:
+        chat_completion = client.chat.completions.create(
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You are a helpful assistant that provides accurate answers based on document context."
+                },
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ],
+            model="llama-3.1-8b-instant",
+            temperature=0.7,
+            max_tokens=1024
+        )
+
+    except Exception as e:
+        error_msg = f"Error generating answer: {str(e)}"
+        print(error_msg)
+        
+
 
