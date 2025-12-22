@@ -223,9 +223,18 @@ Answer:"""
             max_tokens=1024
         )
 
+        answer = chat_completion.choices[0].message.content
+        sources_text = "\n\n**Sources:**\n"
+        for i, source in enumerate(sources, 1):
+            sources_text += f"{i}. {source['filename']} (Page {source['page']}, Relevance: {source['similarity']})\n"
+        
+        final_answer = answer + sources_text
+        history.append((query, final_answer))
+
+        return final_answer, history
+
     except Exception as e:
         error_msg = f"Error generating answer: {str(e)}"
         print(error_msg)
-        
-
-
+        history.append((query, error_msg))
+        return error_msg, history
