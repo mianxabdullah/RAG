@@ -6,6 +6,7 @@ from sentence_transformers import SentenceTransformer
 from typing import List, Dict, Tuple
 import PyPDF2
 import pdfplumber
+from sklearn.metrics.pairwise import cosine_similarity
 
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "")
 if not GROQ_API_KEY:
@@ -132,5 +133,30 @@ def process_pdfs(pdf_files) -> str:
     
     summary = f"Successfully processed {len(documents_data)} PDF file(s):\n" + "\n".join(all_text)
     return summary
+
+def retrieve_relevant_chunks(query: str, top_k: int = 3) -> List[Tuple[Dict, float]]:
+    if not documents_data:
+        return []
+    
+    query_embedding = model.encode([query])
+    
+    all_matches = []
+    for doc in documents_data:
+        similarities = cosine_similarity(query_embedding, doc.embeddings)[0]
+        
+        top_indices = np.argsort(similarities)[-top_k:][::-1]
+        
+        for idx in top_indices:
+            chunk = doc.chunks[idx]
+            similarity = float(similarities[idx])
+            all_matches.append(({
+                'text': chunk['text'],
+                'page_num': chunk['page_num'],
+                'filename': doc.filename,
+                'chunk_id': chunk['chunk_id']
+            }, similarity))
+    
+    all_matches.sort(key=lambda x: x[1], reverse=True)
+    return all_matches[:top_k]
 
 
