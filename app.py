@@ -290,3 +290,18 @@ def clear_documents():
     global documents_data
     documents_data = []
     return "Documents cleared. Please upload new PDF files."
+
+# Gradio Interface
+with gr.Blocks(title="RAG Chatbot with PDF Support") as demo:
+    gr.Markdown("""
+    # 📚 RAG-Based Chatbot with PDF Support
+    
+    Upload multiple PDF documents and ask questions based on their content!
+    
+    **Features:**
+    - Multiple PDF file upload
+    - Semantic search using sentence transformers
+    - Conversational memory/history
+    - Source references with page numbers
+    - Powered by Groq LLM (Llama 3.1)
+    """)
