@@ -280,3 +280,8 @@ def chat_function(message: str, history: List) -> List:
     answer, updated_history_tuples = generate_answer(message, relevant_chunks, history_tuples)
     
     return convert_history_to_messages(updated_history_tuples)
+
+def clear_chat():
+    global chat_history
+    chat_history = []
+    return []
