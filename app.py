@@ -285,3 +285,8 @@ def clear_chat():
     global chat_history
     chat_history = []
     return []
+
+def clear_documents():
+    global documents_data
+    documents_data = []
+    return "Documents cleared. Please upload new PDF files."
