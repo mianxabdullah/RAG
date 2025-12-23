@@ -266,3 +266,17 @@ def convert_history_from_messages(history: List) -> List:
             tuples.append(history[i])
         i += 1
     return tuples
+
+def chat_function(message: str, history: List) -> List:
+    global documents_data
+    
+    history_tuples = convert_history_from_messages(history) if history else []
+    if not documents_data:
+        history_tuples.append((message, "Please upload PDF files first before asking questions."))
+        return convert_history_to_messages(history_tuples)
+
+    relevant_chunks = retrieve_relevant_chunks(message, top_k=3)
+    
+    answer, updated_history_tuples = generate_answer(message, relevant_chunks, history_tuples)
+    
+    return convert_history_to_messages(updated_history_tuples)
