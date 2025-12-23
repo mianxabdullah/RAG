@@ -251,3 +251,18 @@ def convert_history_to_messages(history: List) -> List:
         elif isinstance(item, dict) and "role" in item and "content" in item:
             messages.append(item)
     return messages
+
+def convert_history_from_messages(history: List) -> List:
+    tuples = []
+    i = 0
+    while i < len(history):
+        if isinstance(history[i], dict):
+            if history[i].get('role') == 'user' and i + 1 < len(history):
+                if isinstance(history[i + 1], dict) and history[i + 1].get('role') == 'assistant':
+                    tuples.append((history[i]['content'], history[i + 1]['content']))
+                    i += 2
+                    continue
+        elif isinstance(history[i], tuple):
+            tuples.append(history[i])
+        i += 1
+    return tuples
