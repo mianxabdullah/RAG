@@ -305,3 +305,19 @@ with gr.Blocks(title="RAG Chatbot with PDF Support") as demo:
     - Source references with page numbers
     - Powered by Groq LLM (Llama 3.1)
     """)
+
+    with gr.Row():
+        with gr.Column(scale=1):
+            gr.Markdown("### 📄 Upload PDF Files")
+            pdf_upload = gr.File(
+                file_count="multiple",
+                file_types=[".pdf"],
+                label="Upload PDF Files"
+            )
+            process_btn = gr.Button("Process PDFs", variant="primary")
+            status_output = gr.Textbox(
+                label="Processing Status",
+                lines=5,
+                interactive=False
+            )
+            clear_docs_btn = gr.Button("Clear Documents", variant="stop")
