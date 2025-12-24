@@ -321,3 +321,19 @@ with gr.Blocks(title="RAG Chatbot with PDF Support") as demo:
                 interactive=False
             )
             clear_docs_btn = gr.Button("Clear Documents", variant="stop")
+
+        with gr.Column(scale=2):
+            gr.Markdown("### 💬 Chat")
+            chatbot = gr.Chatbot(
+                label="Chat History",
+                height=500
+            )
+            with gr.Row():
+                query_input = gr.Textbox(
+                    label="Ask a question",
+                    placeholder="Type your question here...",
+                    scale=4
+                )
+                submit_btn = gr.Button("Send", variant="primary", scale=1)
+            
+            clear_chat_btn = gr.Button("Clear Chat", variant="stop")
