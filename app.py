@@ -369,3 +369,14 @@ with gr.Blocks(title="RAG Chatbot with PDF Support") as demo:
         fn=clear_documents,
         outputs=[status_output]
     )
+
+    gr.Markdown("""
+    ### 📖 How to Use:
+    1. Upload one or more PDF files using the file uploader
+    2. Click "Process PDFs" to extract and index the content
+    3. Ask questions about the uploaded documents
+    4. View sources and page numbers in the answers
+    """)
+
+if __name__ == "__main__":
+    demo.launch(share=False, theme=gr.themes.Soft())
