@@ -337,3 +337,17 @@ with gr.Blocks(title="RAG Chatbot with PDF Support") as demo:
                 submit_btn = gr.Button("Send", variant="primary", scale=1)
             
             clear_chat_btn = gr.Button("Clear Chat", variant="stop")
+
+    # Event handlers
+    process_btn.click(
+        fn=process_pdfs,
+        inputs=[pdf_upload],
+        outputs=[status_output]
+    )
+    submit_btn.click(
+        fn=chat_function,
+        inputs=[query_input, chatbot],
+        outputs=[chatbot]
+    ).then(
+        lambda: "", outputs=[query_input]
+    )
