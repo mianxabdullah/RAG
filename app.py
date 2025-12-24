@@ -351,3 +351,21 @@ with gr.Blocks(title="RAG Chatbot with PDF Support") as demo:
     ).then(
         lambda: "", outputs=[query_input]
     )
+
+    query_input.submit(
+        fn=chat_function,
+        inputs=[query_input, chatbot],
+        outputs=[chatbot]
+    ).then(
+        lambda: "", outputs=[query_input]
+    )
+    
+    clear_chat_btn.click(
+        fn=clear_chat,
+        outputs=[chatbot]
+    )
+    
+    clear_docs_btn.click(
+        fn=clear_documents,
+        outputs=[status_output]
+    )
